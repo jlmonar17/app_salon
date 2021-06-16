@@ -10,6 +10,12 @@ function iniciarApp() {
     mostrarSeccion();
 
     cambiarSeccion();
+
+    paginaAnterior();
+
+    paginaSiguiente();
+
+    mostrarOcultarBotonesPaginador();
 }
 
 function cambiarSeccion() {
@@ -20,37 +26,31 @@ function cambiarSeccion() {
             e.preventDefault();
             pagina = parseInt(e.target.dataset.paso);
 
-            const tabActualSeleccionado = document.querySelector(
-                `[data-paso="${pagina}"]`
-            );
-            tabActualSeleccionado.classList.remove("activo");
+            mostrarSeccion();
 
-            console.log(tabActualSeleccionado);
-
-            // No mostrar seccion anterior
-            document
-                .querySelector(".mostrar-seccion")
-                .classList.remove("mostrar-seccion");
-
-            // Mostrar sección actual seleccionada
-            const seccion = document.querySelector(`#pagina-${pagina}`);
-            seccion.classList.add("mostrar-seccion");
-
-            // No marcar tab anterior
-            document.querySelector(".activo").classList.remove("activo");
-
-            // Marcar tab actual seleccionado
-            const tab = document.querySelector(`[data-paso="${pagina}"]`);
-            tab.classList.add("activo");
-            // e.target.classList.add("activo");
+            mostrarOcultarBotonesPaginador();
         });
     });
 }
 
 function mostrarSeccion() {
+    // No mostrar seccion anterior
+    const seccionAnterior = document.querySelector(".mostrar-seccion");
+    if (seccionAnterior) {
+        seccionAnterior.classList.remove("mostrar-seccion");
+    }
+
+    // No marcar tab anterior
+    const tabAnterior = document.querySelector(".activo");
+    if (tabAnterior) {
+        tabAnterior.classList.remove("activo");
+    }
+
+    // Mostrar sección actual seleccionada
     const seccion = document.querySelector(`#pagina-${pagina}`);
     seccion.classList.add("mostrar-seccion");
 
+    // Marcar tab actual seleccionado
     const tab = document.querySelector(`[data-paso="${pagina}"]`);
     tab.classList.add("activo");
 }
@@ -111,4 +111,40 @@ function seleccionarServicio(event) {
     } else {
         elemento.classList.add("seleccionado");
     }
+}
+
+function paginaAnterior() {
+    const botonAnterior = document.querySelector("#anterior");
+    botonAnterior.addEventListener("click", function () {
+        pagina--;
+
+        mostrarOcultarBotonesPaginador();
+    });
+}
+
+function paginaSiguiente() {
+    const botonSiguiente = document.querySelector("#siguiente");
+    botonSiguiente.addEventListener("click", function () {
+        pagina++;
+
+        mostrarOcultarBotonesPaginador();
+    });
+}
+
+function mostrarOcultarBotonesPaginador() {
+    const botonAnterior = document.querySelector("#anterior");
+    const botonSiguiente = document.querySelector("#siguiente");
+
+    if (pagina === 1) {
+        botonSiguiente.classList.remove("ocultar");
+        botonAnterior.classList.add("ocultar");
+    } else if (pagina === 2) {
+        botonAnterior.classList.remove("ocultar");
+        botonSiguiente.classList.remove("ocultar");
+    } else {
+        botonSiguiente.classList.add("ocultar");
+        botonAnterior.classList.remove("ocultar");
+    }
+
+    mostrarSeccion();
 }
