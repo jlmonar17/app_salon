@@ -63,6 +63,7 @@ function watchArchivos() {
 }
 
 exports.css = css;
+exports.javascript = javascript;
 exports.watchArchivos = watchArchivos;
 exports.default = parallel(
     css,
