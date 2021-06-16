@@ -1,9 +1,58 @@
+let pagina = 1;
+
 document.addEventListener("DOMContentLoaded", function () {
     iniciarApp();
 });
 
 function iniciarApp() {
     mostrarServicios();
+
+    mostrarSeccion();
+
+    cambiarSeccion();
+}
+
+function cambiarSeccion() {
+    const enlaces = document.querySelectorAll(".tabs button");
+
+    enlaces.forEach(function (enlace) {
+        enlace.addEventListener("click", function (e) {
+            e.preventDefault();
+            pagina = parseInt(e.target.dataset.paso);
+
+            const tabActualSeleccionado = document.querySelector(
+                `[data-paso="${pagina}"]`
+            );
+            tabActualSeleccionado.classList.remove("activo");
+
+            console.log(tabActualSeleccionado);
+
+            // No mostrar seccion anterior
+            document
+                .querySelector(".mostrar-seccion")
+                .classList.remove("mostrar-seccion");
+
+            // Mostrar sección actual seleccionada
+            const seccion = document.querySelector(`#pagina-${pagina}`);
+            seccion.classList.add("mostrar-seccion");
+
+            // No marcar tab anterior
+            document.querySelector(".activo").classList.remove("activo");
+
+            // Marcar tab actual seleccionado
+            const tab = document.querySelector(`[data-paso="${pagina}"]`);
+            tab.classList.add("activo");
+            // e.target.classList.add("activo");
+        });
+    });
+}
+
+function mostrarSeccion() {
+    const seccion = document.querySelector(`#pagina-${pagina}`);
+    seccion.classList.add("mostrar-seccion");
+
+    const tab = document.querySelector(`[data-paso="${pagina}"]`);
+    tab.classList.add("activo");
 }
 
 async function mostrarServicios() {

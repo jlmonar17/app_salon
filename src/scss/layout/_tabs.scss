@@ -14,4 +14,9 @@
             cursor: pointer;
         }
     }
+
+    .activo {
+        background-color: $azul;
+        color: $blanco;
+    }
 }
