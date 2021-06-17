@@ -1,5 +1,12 @@
 let pagina = 1;
 
+const cita = {
+    nombre: "",
+    fecha: "",
+    hora: "",
+    servicios: [],
+};
+
 document.addEventListener("DOMContentLoaded", function () {
     iniciarApp();
 });
@@ -16,6 +23,16 @@ function iniciarApp() {
     paginaSiguiente();
 
     mostrarOcultarBotonesPaginador();
+
+    mostrarResumenCita();
+
+    nombreCita();
+
+    fechaCita();
+
+    deshabilitarFecha();
+
+    horaCita();
 }
 
 function cambiarSeccion() {
@@ -106,11 +123,31 @@ function seleccionarServicio(event) {
         elemento = event.target;
     }
 
+    const objectoServicio = {
+        id: parseInt(elemento.dataset.idServicio),
+        nombre: elemento.children[0].textContent,
+        precio: elemento.children[1].textContent,
+    };
+
     if (elemento.classList.contains("seleccionado")) {
         elemento.classList.remove("seleccionado");
+
+        eliminarServicio(objectoServicio);
     } else {
         elemento.classList.add("seleccionado");
+
+        agregarServicio(objectoServicio);
     }
+}
+
+function eliminarServicio(objectoServicio) {
+    const { id } = objectoServicio;
+    cita.servicios = cita.servicios.filter((servicio) => servicio.id !== id);
+}
+
+function agregarServicio(objectoServicio) {
+    const { servicios } = cita;
+    cita.servicios = [...servicios, objectoServicio];
 }
 
 function paginaAnterior() {
@@ -147,4 +184,115 @@ function mostrarOcultarBotonesPaginador() {
     }
 
     mostrarSeccion();
+}
+
+function mostrarResumenCita() {
+    const divResumen = document.querySelector(".contenido-resumen");
+
+    if (Object.values(cita).includes("")) {
+        const noServicios = document.createElement("P");
+        noServicios.textContent =
+            "Faltan datos de servicios, hora, fecha o nombre.";
+        noServicios.classList.add("invalidar-cita");
+
+        divResumen.appendChild(noServicios);
+    }
+}
+
+function nombreCita() {
+    const nombreInput = document.querySelector("#nombre");
+
+    nombreInput.addEventListener("input", function (e) {
+        const nombre = e.target.value.trim();
+
+        if (nombre === "" || nombre.length < 3) {
+            mostrarAlerta("El nombre no es válido", "error");
+        } else {
+            const alertaPrevia = document.querySelector(".alerta");
+            if (alertaPrevia) {
+                alertaPrevia.remove();
+            }
+
+            cita.nombre = nombre;
+        }
+    });
+}
+
+function mostrarAlerta(mensaje, tipo) {
+    // Verifico si existe una alerta previa.
+    const alertaPrevia = document.querySelector(".alerta");
+    if (alertaPrevia) {
+        return;
+    }
+
+    const alerta = document.createElement("DIV");
+    alerta.textContent = mensaje;
+    alerta.classList.add("alerta");
+
+    if (tipo === "error") {
+        alerta.classList.add("error");
+    }
+
+    const formulario = document.querySelector(".formulario");
+    formulario.appendChild(alerta);
+
+    setTimeout(function () {
+        alerta.remove();
+    }, 3000);
+}
+
+function fechaCita() {
+    const fechaInput = document.querySelector("#fecha");
+
+    fechaInput.addEventListener("input", function (event) {
+        const fechaSeleccionada = new Date(event.target.value);
+
+        const diaSeleccionado = fechaSeleccionada.getDay();
+
+        if ([5, 6].includes(diaSeleccionado)) {
+            mostrarAlerta("No es un día válido", "error");
+        } else {
+            cita.fecha = event.target.value;
+        }
+    });
+}
+
+function deshabilitarFecha() {
+    const fechaInput = document.querySelector("#fecha");
+
+    const fechaActual = new Date();
+
+    const anio = fechaActual.getFullYear();
+    let mes = fechaActual.getMonth() + 1;
+    let dia = fechaActual.getDate();
+
+    if (mes < 10) {
+        mes = `0${mes}`;
+    }
+
+    if (dia < 10) {
+        dia = `0${dia}`;
+    }
+
+    const fechaDeshabilitar = `${anio}-${mes}-${dia}`;
+
+    fechaInput.min = fechaDeshabilitar;
+}
+
+function horaCita() {
+    const horaInput = document.querySelector("#hora");
+    horaInput.addEventListener("input", function (event) {
+        const horaCita = event.target.value;
+        const hora = horaCita.split(":");
+
+        if (hora[0] < 10 || hora[0] > 18) {
+            mostrarAlerta("Hora no válida", "error");
+
+            setTimeout(function () {
+                horaInput.value = "";
+            }, 1000);
+        } else {
+            cita.hora = horaCita;
+        }
+    });
 }
