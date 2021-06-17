@@ -181,6 +181,8 @@ function mostrarOcultarBotonesPaginador() {
     } else {
         botonSiguiente.classList.add("ocultar");
         botonAnterior.classList.remove("ocultar");
+
+        mostrarResumenCita();
     }
 
     mostrarSeccion();
@@ -188,6 +190,10 @@ function mostrarOcultarBotonesPaginador() {
 
 function mostrarResumenCita() {
     const divResumen = document.querySelector(".contenido-resumen");
+    // Borro el contenido HTML previo del DIV de resumen:
+    while (divResumen.firstElementChild) {
+        divResumen.firstElementChild.remove();
+    }
 
     if (Object.values(cita).includes("")) {
         const noServicios = document.createElement("P");
@@ -196,7 +202,70 @@ function mostrarResumenCita() {
         noServicios.classList.add("invalidar-cita");
 
         divResumen.appendChild(noServicios);
+
+        return;
     }
+
+    // Muestro información dada por cliente en elementos de texto.
+    const headingCita = document.createElement("H3");
+    headingCita.textContent = "Resumen de Cita";
+
+    const nombreCita = document.createElement("P");
+    nombreCita.innerHTML = `<span>Nombre:</span> ${cita.nombre}`;
+
+    const fechaCita = document.createElement("P");
+    fechaCita.innerHTML = `<span>Fecha:</span> ${cita.fecha}`;
+
+    const horaCita = document.createElement("P");
+    horaCita.innerHTML = `<span>Hora:</span> ${cita.hora}`;
+
+    divResumen.appendChild(headingCita);
+    divResumen.appendChild(nombreCita);
+    divResumen.appendChild(fechaCita);
+    divResumen.appendChild(horaCita);
+
+    // Sección para mostrar los servicios.
+    const divServicios = document.createElement("DIV");
+    divServicios.classList.add("resumen-servicios");
+
+    const headingServicio = document.createElement("H3");
+    headingServicio.textContent = "Resumen de Servicios";
+    divServicios.appendChild(headingServicio);
+
+    let cantidad = 0;
+    // Recorro la lista de servicios seleccionadas por el usuario y las coloco en un div.
+    cita.servicios.forEach((servicio) => {
+        const { nombre, precio } = servicio;
+
+        const contenedorServicio = document.createElement("DIV");
+        contenedorServicio.classList.add("contenedor-servicio");
+
+        const nombreServicio = document.createElement("P");
+        nombreServicio.textContent = nombre;
+
+        const precioServicio = document.createElement("P");
+        precioServicio.textContent = precio;
+        precioServicio.classList.add("precio");
+
+        // Sumo el precio de cada servicio.
+        const totalServicio = precio.split("$");
+        console.log(totalServicio);
+        cantidad += parseInt(totalServicio[1].trim());
+
+        contenedorServicio.appendChild(nombreServicio);
+        contenedorServicio.appendChild(precioServicio);
+
+        divServicios.appendChild(contenedorServicio);
+    });
+
+    divResumen.appendChild(divServicios);
+
+    // Agrego cantidad total
+    const cantidadTotal = document.createElement("P");
+    cantidadTotal.classList.add("total");
+    cantidadTotal.innerHTML = `<span>Total a pagar: </span> $ ${cantidad}`;
+
+    divResumen.appendChild(cantidadTotal);
 }
 
 function nombreCita() {
@@ -290,7 +359,7 @@ function horaCita() {
 
             setTimeout(function () {
                 horaInput.value = "";
-            }, 1000);
+            }, 2000);
         } else {
             cita.hora = horaCita;
         }
