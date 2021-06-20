@@ -74,14 +74,16 @@ function mostrarSeccion() {
 
 async function mostrarServicios() {
     try {
-        const consulta = await fetch("./servicios.json");
-        const data = await consulta.json();
+        const urlServices =
+            "http://localhost/curso_desarrollo_web_completo/app_salon/services.php";
 
-        const { servicios } = data;
+        const consulta = await fetch(urlServices);
+        const data = await consulta.json();
 
         const serviciosDiv = document.querySelector("#servicios");
 
-        servicios.forEach((servicio) => {
+        // servicios.forEach((servicio) => {
+        data.forEach((servicio) => {
             const { id, nombre, precio } = servicio;
 
             // DOM Scripting
